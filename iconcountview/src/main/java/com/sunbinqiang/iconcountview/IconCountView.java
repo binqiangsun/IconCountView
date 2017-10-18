@@ -3,7 +3,7 @@ package com.sunbinqiang.iconcountview;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
-import android.graphics.Rect;
+import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -17,11 +17,12 @@ import android.widget.LinearLayout;
 
 public class IconCountView extends LinearLayout {
 
+    private boolean mIsPraised;
     private ImageView mImageView;
     private CountView mCountView;
     private int mNormalRes;
     private int mSelectedRes;
-    private Rect mDrawableBounds;
+    private OnPraiseStateChanged mPraiseStateChanged;
 
     public IconCountView(Context context) {
         this(context, null);
@@ -33,9 +34,27 @@ public class IconCountView extends LinearLayout {
 
     public IconCountView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
         View view = LayoutInflater.from(context).inflate(R.layout.icon_count_view, this);
         mCountView = view.findViewById(R.id.count_view);
         mImageView = view.findViewById(R.id.image_view);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IconCountView, defStyleAttr, 0);
+        boolean isPraised = a.getBoolean(R.styleable.IconCountView_state, false);
+        long count = a.getInt(R.styleable.IconCountView_count, 0);
+        int normalRes = a.getResourceId(R.styleable.IconCountView_normalRes, R.drawable.icon_praise_normal);
+        int selectedRes = a.getResourceId(R.styleable.IconCountView_selectedRes, R.drawable.icon_praise_selected);
+        setCount(count);
+        setIconRes(normalRes, selectedRes);
+        setPraised(isPraised);
+        a.recycle();
+
+        view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                praiseChange(!mIsPraised);
+            }
+        });
     }
 
     //初始化icon
@@ -50,8 +69,15 @@ public class IconCountView extends LinearLayout {
         mCountView.setCount(count);
     }
 
-    //状态变化
+    //初始化状态
     public void setPraised(boolean isPraised) {
+        mIsPraised = isPraised;
+        mImageView.setImageResource(mIsPraised ? mSelectedRes : mNormalRes);
+    }
+
+    //状态变化
+    private void praiseChange(boolean isPraised) {
+        mIsPraised = isPraised;
         //icon变化
         mImageView.setImageResource(isPraised ? mSelectedRes : mNormalRes);
         animImageView(isPraised);
@@ -61,8 +87,16 @@ public class IconCountView extends LinearLayout {
         } else {
             mCountView.minusCount();
         }
+        //接口回调
+        if (mPraiseStateChanged != null) {
+            mPraiseStateChanged.praise(mIsPraised);
+        }
     }
 
+    /**
+     * 点赞icon动画
+     * @param isPraised
+     */
     private void animImageView(boolean isPraised) {
         //图片动画
         float toScale = isPraised ? 1.2f : 0.9f;
@@ -71,5 +105,13 @@ public class IconCountView extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofPropertyValuesHolder(mImageView,
                 propertyValuesHolderX, propertyValuesHolderY);
         objectAnimator.start();
+    }
+
+    /**
+     * 外部回调
+     * 例如：处理点赞事件的网络请求
+     */
+    interface OnPraiseStateChanged {
+        void praise(boolean isPraised);
     }
 }

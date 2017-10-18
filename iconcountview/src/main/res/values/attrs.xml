@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IconCountView">
+        <attr name="count" format="integer" />
+        <attr name="state" format="boolean" />
+        <attr name="normalRes" format="reference"/>
+        <attr name="selectedRes" format="reference"/>
+    </declare-styleable>
+</resources>
