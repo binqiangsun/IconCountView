@@ -6,5 +6,8 @@
         <attr name="normalRes" format="reference"/>
         <attr name="selectedRes" format="reference"/>
         <attr name="zeroText" format="string"/>
+        <attr name="textNormalColor" format="color"/>
+        <attr name="textSelectedColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
     </declare-styleable>
 </resources>

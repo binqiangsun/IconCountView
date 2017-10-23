@@ -23,6 +23,7 @@ public class CountView extends View {
     private static final int PADDING_WIDTH = 12;
     private static final int PADDING_HEIGHT = 60;
     private static final int PADDING_SPACE = 3;
+    private final int DEFAULT_TEXT_SIZE = getResources().getDimensionPixelSize(R.dimen.text_normal_size);
 
     private long mCurCount; // 当前数量
     private long mNewCount; // 即将变化的数量
@@ -37,8 +38,11 @@ public class CountView extends View {
 
     private String mZeroText; //当数字为0时显示文字
 
-    private Paint mTextPaint;
-    private float mTextSize = 36;
+    private Paint mTextNormalPaint;
+    private Paint mTextSelectedPaint;
+
+    private boolean mIsSelected; //当前状态是否选中
+
 
 
     public CountView(Context context) {
@@ -51,12 +55,17 @@ public class CountView extends View {
 
     public CountView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mTextPaint = new Paint();
-        mTextPaint.setColor(getResources().getColor(R.color.text_gray));
-        mTextPaint.setTextSize(mTextSize);
-        mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.getTextBounds("0", 0, 1, mDigitalRect);
+        mTextNormalPaint = new Paint();
+        mTextSelectedPaint = new Paint();
+        mTextNormalPaint.setColor(getResources().getColor(R.color.text_gray));
+        mTextNormalPaint.setTextSize(DEFAULT_TEXT_SIZE);
+        mTextNormalPaint.setStyle(Paint.Style.FILL);
+        mTextNormalPaint.setAntiAlias(true);
+        mTextSelectedPaint.setColor(getResources().getColor(R.color.text_gray));
+        mTextSelectedPaint.setTextSize(DEFAULT_TEXT_SIZE);
+        mTextSelectedPaint.setStyle(Paint.Style.FILL);
+        mTextSelectedPaint.setAntiAlias(true);
+        mTextNormalPaint.getTextBounds("0", 0, 1, mDigitalRect);
         initAnimator();
         postInvalidate();
     }
@@ -105,6 +114,8 @@ public class CountView extends View {
         changeCount(0);
     }
 
+
+
     /**
      * 设置数字为0时的文本
      * @param zeroText
@@ -113,11 +124,29 @@ public class CountView extends View {
         mZeroText = zeroText;
     }
 
+    public void setTextNormalColor(int normalColor) {
+        mTextNormalPaint.setColor(normalColor);
+    }
+
+    public void setTextSelectedColor(int selectedColor) {
+        mTextSelectedPaint.setColor(selectedColor);
+    }
+
+    public void setTextSize(int textSize) {
+        mTextNormalPaint.setTextSize(textSize);
+        mTextSelectedPaint.setTextSize(textSize);
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        mIsSelected = isSelected;
+    }
+
     /**
      * +1
      */
     public void addCount() {
         changeCount(1);
+        mIsSelected = true;
     }
 
     /**
@@ -125,6 +154,7 @@ public class CountView extends View {
      */
     public void minusCount() {
         changeCount(-1);
+        mIsSelected = false;
     }
 
     /**
@@ -168,7 +198,7 @@ public class CountView extends View {
             float x = (mDigitalRect.width() + PADDING_SPACE) * i;
             if (newDigital.equals(oldDigital)) {
                 //只绘制新的数字
-                canvas.drawText(String.valueOf(newDigital), x, y, mTextPaint);
+                canvas.drawText(String.valueOf(newDigital), x, y, getCurPaint(mIsSelected));
             } else if (mNewCount > mCurCount) {
                 //旧数字消失动画
                 if (!TextUtils.isEmpty(oldDigital)) {
@@ -192,11 +222,12 @@ public class CountView extends View {
      * @param y
      */
     private void drawIn(Canvas canvas, String digital, float x, float y) {
-        mTextPaint.setAlpha((int) (mCurAniValue * 255));
-        mTextPaint.setTextSize(mTextSize * (mCurAniValue * 0.5f + 0.5f));
-        canvas.drawText(digital, x, y, mTextPaint);
-        mTextPaint.setAlpha(255);
-        mTextPaint.setTextSize(mTextSize);
+        Paint inPaint = getCurPaint(mIsSelected);
+        inPaint.setAlpha((int) (mCurAniValue * 255));
+        inPaint.setTextSize(DEFAULT_TEXT_SIZE * (mCurAniValue * 0.5f + 0.5f));
+        canvas.drawText(digital, x, y, inPaint);
+        inPaint.setAlpha(255);
+        inPaint.setTextSize(DEFAULT_TEXT_SIZE);
     }
 
     /**
@@ -206,22 +237,35 @@ public class CountView extends View {
      * @param y
      */
     private void drawOut(Canvas canvas, String digital, float x, float y) {
-        mTextPaint.setAlpha(255 - (int) (mCurAniValue * 255));
-        mTextPaint.setTextSize(mTextSize * (1.0f - mCurAniValue * 0.5f));
-        canvas.drawText(digital, x, y, mTextPaint);
-        mTextPaint.setAlpha(255);
-        mTextPaint.setTextSize(mTextSize);
+        Paint outPaint = getCurPaint(!mIsSelected);
+        outPaint.setAlpha(255 - (int) (mCurAniValue * 255));
+        outPaint.setTextSize(DEFAULT_TEXT_SIZE * (1.0f - mCurAniValue * 0.5f));
+        canvas.drawText(digital, x, y, outPaint);
+        outPaint.setAlpha(255);
+        outPaint.setTextSize(DEFAULT_TEXT_SIZE);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mRect.setEmpty();
-        mTextPaint.getTextBounds(mStrNewCount, 0, mStrNewCount.length(), mRect);
+        mTextNormalPaint.getTextBounds(mStrNewCount, 0, mStrNewCount.length(), mRect);
         int textWidth = mRect.width() + PADDING_WIDTH * 2;
         int textHeight = mRect.height() + PADDING_HEIGHT * 2;
         final int dw = resolveSizeAndState(textWidth, widthMeasureSpec, 0);
         final int dh = resolveSizeAndState(textHeight, heightMeasureSpec, 0);
         setMeasuredDimension(dw, dh);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        changeCount(0);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mObjectAnimator.end();
     }
 
     private void toDigitals(long num, List<String> digitalList) {
@@ -235,10 +279,7 @@ public class CountView extends View {
         }
     }
 
-
-    public void onDestroy() {
-        if (mObjectAnimator != null) {
-            mObjectAnimator.end();
-        }
+    private Paint getCurPaint(boolean isSelected) {
+        return isSelected ? mTextSelectedPaint : mTextNormalPaint;
     }
 }
