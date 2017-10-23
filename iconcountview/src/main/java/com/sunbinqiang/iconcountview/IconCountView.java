@@ -44,6 +44,8 @@ public class IconCountView extends LinearLayout {
         long count = a.getInt(R.styleable.IconCountView_count, 0);
         int normalRes = a.getResourceId(R.styleable.IconCountView_normalRes, R.drawable.icon_praise_normal);
         int selectedRes = a.getResourceId(R.styleable.IconCountView_selectedRes, R.drawable.icon_praise_selected);
+        String zeroText = a.getString(R.styleable.IconCountView_zeroText);
+        setZeroText(zeroText);
         setCount(count);
         setIconRes(normalRes, selectedRes);
         setPraised(isPraised);
@@ -67,6 +69,11 @@ public class IconCountView extends LinearLayout {
     //初始化count
     public void setCount(long count) {
         mCountView.setCount(count);
+    }
+
+    //
+    public void setZeroText(String zeroText) {
+        mCountView.setZeroText(zeroText);
     }
 
     //初始化状态

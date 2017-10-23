@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -26,13 +27,15 @@ public class CountView extends View {
     private long mCurCount; // 当前数量
     private long mNewCount; // 即将变化的数量
     private String mStrNewCount;
-    private List<Integer> mCurDigitalList = new ArrayList<>(); // 当前数量各位数字的列表
-    private List<Integer> mNewDigitalList = new ArrayList<>(); // 即将变化数量各位数字列表
+    private List<String> mCurDigitalList = new ArrayList<>(); // 当前数量各位数字的列表
+    private List<String> mNewDigitalList = new ArrayList<>(); // 即将变化数量各位数字列表
     private ValueAnimator mObjectAnimator;
     private float mCurAniValue;    //当前属性动画数值
 
     private Rect mRect = new Rect(); // 当前文字的区域
     private Rect mDigitalRect = new Rect(); // 单个数字的区域
+
+    private String mZeroText; //当数字为0时显示文字
 
     private Paint mTextPaint;
     private float mTextSize = 36;
@@ -94,11 +97,20 @@ public class CountView extends View {
 
     /**
      * initial mCurCount
+     *
      * @param count
      */
     public void setCount(long count) {
         mCurCount = count;
         changeCount(0);
+    }
+
+    /**
+     * 设置数字为0时的文本
+     * @param zeroText
+     */
+    public void setZeroText(String zeroText) {
+        mZeroText = zeroText;
     }
 
     /**
@@ -117,6 +129,7 @@ public class CountView extends View {
 
     /**
      * 数量发生变化
+     *
      * @param change
      */
     private void changeCount(long change) {
@@ -127,7 +140,11 @@ public class CountView extends View {
         this.mNewCount = mCurCount + change;
         toDigitals(mCurCount, mCurDigitalList);
         toDigitals(mNewCount, mNewDigitalList);
-        mStrNewCount = String.valueOf(mNewCount);
+        if (mNewCount > 0) {
+            mStrNewCount = String.valueOf(mNewCount);
+        } else {
+            mStrNewCount = mZeroText;
+        }
         if (mObjectAnimator != null && mNewCount != mCurCount) {
             mObjectAnimator.start();
         } else {
@@ -142,25 +159,25 @@ public class CountView extends View {
         super.onDraw(canvas);
         int len = mNewDigitalList.size();
         float y = PADDING_HEIGHT + mDigitalRect.height();
-        for (int i = 0; i < len; i ++) {
-            int newDigital = mNewDigitalList.get(i);
-            int oldDigital = -1;
+        for (int i = 0; i < len; i++) {
+            String newDigital = mNewDigitalList.get(i);
+            String oldDigital = "";
             if (mCurDigitalList.size() > i) {
                 oldDigital = mCurDigitalList.get(i);
             }
             float x = (mDigitalRect.width() + PADDING_SPACE) * i;
-            if (newDigital == oldDigital){
+            if (newDigital.equals(oldDigital)) {
                 //只绘制新的数字
                 canvas.drawText(String.valueOf(newDigital), x, y, mTextPaint);
             } else if (mNewCount > mCurCount) {
                 //旧数字消失动画
-                if (oldDigital != -1) {
+                if (!TextUtils.isEmpty(oldDigital)) {
                     drawOut(canvas, oldDigital, x, y - (mCurAniValue * PADDING_HEIGHT));
                 }
                 //新数字进入动画绘制
                 drawIn(canvas, newDigital, x, y + (PADDING_HEIGHT - mCurAniValue * PADDING_HEIGHT));
             } else {
-                if (oldDigital != -1) {
+                if (!TextUtils.isEmpty(oldDigital)) {
                     drawOut(canvas, oldDigital, x, y + (mCurAniValue * PADDING_HEIGHT));
                 }
                 drawIn(canvas, newDigital, x, y - (PADDING_HEIGHT - mCurAniValue * PADDING_HEIGHT));
@@ -169,31 +186,29 @@ public class CountView extends View {
     }
 
     /**
-     *
      * @param canvas
      * @param digital
      * @param x
      * @param y
      */
-    private void drawIn(Canvas canvas, int digital, float x, float y) {
-        mTextPaint.setAlpha((int)(mCurAniValue * 255));
+    private void drawIn(Canvas canvas, String digital, float x, float y) {
+        mTextPaint.setAlpha((int) (mCurAniValue * 255));
         mTextPaint.setTextSize(mTextSize * (mCurAniValue * 0.5f + 0.5f));
-        canvas.drawText(String.valueOf(digital), x, y, mTextPaint);
+        canvas.drawText(digital, x, y, mTextPaint);
         mTextPaint.setAlpha(255);
         mTextPaint.setTextSize(mTextSize);
     }
 
     /**
-     *
      * @param canvas
      * @param digital
      * @param x
      * @param y
      */
-    private void drawOut(Canvas canvas, int digital, float x, float y) {
-        mTextPaint.setAlpha(255 - (int)(mCurAniValue * 255));
+    private void drawOut(Canvas canvas, String digital, float x, float y) {
+        mTextPaint.setAlpha(255 - (int) (mCurAniValue * 255));
         mTextPaint.setTextSize(mTextSize * (1.0f - mCurAniValue * 0.5f));
-        canvas.drawText(String.valueOf(digital), x, y, mTextPaint);
+        canvas.drawText(digital, x, y, mTextPaint);
         mTextPaint.setAlpha(255);
         mTextPaint.setTextSize(mTextSize);
     }
@@ -209,13 +224,13 @@ public class CountView extends View {
         setMeasuredDimension(dw, dh);
     }
 
-    private void toDigitals(long num, List<Integer> digitalList) {
+    private void toDigitals(long num, List<String> digitalList) {
         digitalList.clear();
         if (num == 0) {
-            digitalList.add(0);
+            digitalList.add(mZeroText);
         }
         while (num > 0) {
-            digitalList.add(0, (int) (num % 10));
+            digitalList.add(0, String.valueOf(num % 10));
             num = num / 10;
         }
     }
