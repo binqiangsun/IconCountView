@@ -12,4 +12,5 @@
 
 #### 2017.10.25更新
 增加文字颜色的设置： 
+
 ![](http://wx2.sinaimg.cn/mw690/7b3eaa29gy1fkux3v9le3g20a006o7wi.gif)
