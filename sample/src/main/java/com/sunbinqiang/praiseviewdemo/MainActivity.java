@@ -21,7 +21,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                praiseView.setCount(Long.valueOf(editText.getText().toString()));
+                try {
+                    long count = Long.valueOf(editText.getText().toString());
+                    praiseView.setCount(count);
+                } catch (Exception e) {
+
+                }
             }
         });
     }

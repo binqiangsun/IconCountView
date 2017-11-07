@@ -4,15 +4,12 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import static com.sunbinqiang.iconcountview.R.attr.count;
 
 /**
  * Created by sunbinqiang on 16/10/2017.
@@ -125,6 +122,7 @@ public class IconCountView extends LinearLayout {
         } else {
             mCountView.minusCount();
         }
+        mCountView.setIsSelected(isPraised);
         //接口回调
         if (mSelectedStateChanged != null) {
             mSelectedStateChanged.select(mIsSelected);
