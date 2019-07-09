@@ -40,7 +40,7 @@ public class IconCountView extends LinearLayout {
         mImageView = view.findViewById(R.id.image_view);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IconCountView, defStyleAttr, 0);
-        boolean isSelected = a.getBoolean(R.styleable.IconCountView_state, false);
+        boolean isChecked = a.getBoolean(R.styleable.IconCountView_checked, false);
         int normalRes = a.getResourceId(R.styleable.IconCountView_normalRes, R.drawable.icon_praise_normal);
         int selectedRes = a.getResourceId(R.styleable.IconCountView_selectedRes, R.drawable.icon_praise_selected);
         long count = a.getInt(R.styleable.IconCountView_count, 0);
@@ -52,8 +52,8 @@ public class IconCountView extends LinearLayout {
 
         //设置初始状态
         setIconRes(normalRes, selectedRes);
-        initCountView(zeroText, count, textNormalColor, textSelectedColor, textSize, isSelected);
-        setSelected(isSelected);
+        initCountView(zeroText, count, textNormalColor, textSelectedColor, textSize, isChecked);
+        setSelected(isChecked);
 
 
         view.setOnClickListener(new OnClickListener() {

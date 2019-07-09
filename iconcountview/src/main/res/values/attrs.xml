@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="IconCountView">
         <attr name="count" format="integer"/>
-        <attr name="state" format="boolean"/>
+        <attr name="checked" format="boolean"/>
         <attr name="normalRes" format="reference"/>
         <attr name="selectedRes" format="reference"/>
         <attr name="zeroText" format="string"/>

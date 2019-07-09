@@ -3,6 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 // This is the library version used when deploying the artifact
 version = PROJ_VERSION
 // Maven Group ID for the artifact
+group = PROJ_GROUP
 
 install {
     repositories.mavenInstaller {
@@ -79,7 +80,7 @@ bintray {
     configurations = ['archives']
     pkg {
         userOrg = "sunbq"
-        repo = "IconCountView"
+        repo = "IconView"
         // it is the name that appears in bintray when logged
         name = PROJ_NAME
         desc = PROJ_DESCRIPTION
