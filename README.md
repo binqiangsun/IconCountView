@@ -1,8 +1,7 @@
 # IconCountView
 该项目是社区类APP点赞，收藏等按钮操作后的数字动画效果的View
-升级MVP模式
 
-#### 即刻点赞效果
+#### 效果
 ![](http://wx1.sinaimg.cn/mw1024/7b3eaa29gy1fkmpwbyrgcg20a006o4gc.gif)
 
 
@@ -13,6 +12,9 @@
 #### 2017.10.25更新
 增加文字颜色的设置：
 ![](http://wx2.sinaimg.cn/mw690/7b3eaa29gy1fkux3v9le3g20a006o7wi.gif)
+
+#### 2017.10.30更新
+分离Model，View层，应用MVP架构
 
 ### 配置
 gradle

@@ -147,7 +147,7 @@ public class IconCountView extends LinearLayout {
      * 外部回调
      * 例如：处理点赞事件的网络请求
      */
-    interface OnSelectedStateChangedListener {
+    public interface OnSelectedStateChangedListener {
         void select(boolean isSelected);
     }
 }
