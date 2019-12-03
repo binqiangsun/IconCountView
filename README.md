@@ -1,8 +1,8 @@
 # IconCountView
-该项目是 《[HenCoder「仿写酷界面」活动](https://zhuanlan.zhihu.com/p/30075481)》点赞效果的投稿
+该项目是社区类APP点赞，收藏等按钮操作后的数字动画效果的View
+升级MVP模式
 
 #### 即刻点赞效果
-
 ![](http://wx1.sinaimg.cn/mw1024/7b3eaa29gy1fkmpwbyrgcg20a006o4gc.gif)
 
 
@@ -11,8 +11,7 @@
 ![](http://wx2.sinaimg.cn/mw690/7b3eaa29gy1fksifgls9xg20a006o1ky.gif)
 
 #### 2017.10.25更新
-增加文字颜色的设置： 
-
+增加文字颜色的设置：
 ![](http://wx2.sinaimg.cn/mw690/7b3eaa29gy1fkux3v9le3g20a006o7wi.gif)
 
 ### 配置
